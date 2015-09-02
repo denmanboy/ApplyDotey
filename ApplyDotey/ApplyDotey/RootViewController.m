@@ -14,19 +14,22 @@
 #import "MBProgressHUD.h"
 
 @interface RootViewController ()<UIAlertViewDelegate,InfoCellDelegate>
-@property(nonatomic,strong)UIImageView *headerImageView;
-@property(nonatomic,copy)NSString *logourl;
-@property(nonatomic,strong) MBProgressHUD *hud;
+
+@property (nonatomic,strong) UIImageView   *headerImageView;
+@property (nonatomic,copy  ) NSString      *logourl;
+@property (nonatomic,strong) MBProgressHUD *hud;
+@property (nonatomic,copy  ) NSString      *validCode;
 @end
 
 @implementation RootViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.title = @"申请免费试驾";
+    self.title = @"申请宝";
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithTitle:@"设置" style:UIBarButtonItemStylePlain target:self action:@selector(goToSetting)];
     self.tableView.tableHeaderView = self.headerImageView;
     [self configSeparatorLine];
+    //用户输入表单的code 保存
     NSString *code  =  (NSString*)[[NSUserDefaults standardUserDefaults]objectForKey:@"code"];
     //保存用户的自己的表单
     if (code.length) {
@@ -117,12 +120,16 @@
                                    InforModel *inforModel = [[InforModel alloc]init];
                                    [inforModel setValuesForKeysWithDictionary:(NSDictionary*)result];
                                    self.logourl = inforModel.logourl;
+                                   self.title = inforModel.title;
                                    //tableView 头部图片
                                    [(UIImageView*)self.tableView.tableHeaderView setImageWithURL:[NSURL URLWithString:inforModel.logo] placeholderImage:nil];
                                    if (!inforModel.input.count) {
                                        [self showPromptTextUIWithPromptText:@"没有数据" title:nil andDuration:2 andposition:CSToastPositionCenter];;
                                        return;
                                    }
+                                   
+                                   //有效的Code 保存服务返回的当期表单的标识
+                                   self.validCode = inforModel.code;
                                    [self.dataArray removeAllObjects];
                                    [self.dataArray addObjectsFromArray:inforModel.input];
                                    [self.tableView reloadData];
@@ -249,6 +256,9 @@
         return;
     }
     if (dic.count) {
+        if (self.validCode.length) {
+        [dic setObject:self.validCode forKey:@"code"];
+        }
         [self commitInfoWithDic:dic];
     }
 }

@@ -25,14 +25,22 @@
 }
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
-
-
+ NSLog(@"%@没有找到",key);
 
 }
+- (id)valueForUndefinedKey:(NSString *)key
+{
+    return nil;
+}
 @end
+
 @implementation Input
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key
 {
-
+   NSLog(@"%@没有找到",key);
+}
+- (id)valueForUndefinedKey:(NSString *)key
+{
+    return nil;
 }
 @end

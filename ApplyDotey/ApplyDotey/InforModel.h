@@ -10,7 +10,6 @@
 
 @class Input;
 @interface InforModel : NSObject
-
 @property (nonatomic, copy  ) NSString *code;
 @property (nonatomic, copy  ) NSString *logourl;
 @property (nonatomic, copy  ) NSString *title;
@@ -20,6 +19,6 @@
 @interface Input : NSObject
 @property (nonatomic, copy  ) NSString *key;
 @property (nonatomic, copy  ) NSString *value;
-@property (nonatomic, copy)  NSString  *text;
+@property (nonatomic, copy  ) NSString *text;
 @end
 
