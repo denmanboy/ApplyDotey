@@ -9,9 +9,8 @@
 #ifndef ApplyDotey_ApplyDotey_pch
 #define ApplyDotey_ApplyDotey_pch
 
-
-
-
+#import "MGJRequestManager.h"
+#import "Reachability.h"
 #ifndef __OPTIMIZE__
 #define NSLog(...) NSLog(__VA_ARGS__)
 #else

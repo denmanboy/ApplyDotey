@@ -418,14 +418,12 @@
         }
         case NetWorkLoadTypeImageAnimationAndPromptText: {
             [self.netWorkLoadIngView.imageView startAnimating];
-            
         }
             break;
         default: {
             break;
         }
     }
-    
 }
 /**留个接口子类自定义*/
 - (void)showCustomLoadingUI

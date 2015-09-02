@@ -15,11 +15,11 @@
     [super setValue:value forKey:key];
     if ([value isKindOfClass:[NSArray class]]) {
         NSMutableArray *array = [NSMutableArray array];
-      [(NSArray*)value enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-          Input *input = [[Input alloc]init];
-          [input setValuesForKeysWithDictionary:(NSDictionary*)obj];
-          [array addObject:input];
-      }];
+        [(NSArray*)value enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            Input *input = [[Input alloc]init];
+            [input setValuesForKeysWithDictionary:(NSDictionary*)obj];
+            [array addObject:input];
+        }];
         self.input = array;
     }
 }

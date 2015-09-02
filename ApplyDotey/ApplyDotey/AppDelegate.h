@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "Reachability.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

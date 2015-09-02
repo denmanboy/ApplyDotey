@@ -7,7 +7,6 @@
 //
 
 #import "RootViewController.h"
-#import "MGJRequestManager.h"
 #import "InforModel.h"
 #import "InfoCell.h"
 #import "UIImageView+AFNetworking.h"
@@ -127,7 +126,6 @@
                                        [self showPromptTextUIWithPromptText:@"没有数据" title:nil andDuration:2 andposition:CSToastPositionCenter];;
                                        return;
                                    }
-                                   
                                    //有效的Code 保存服务返回的当期表单的标识
                                    self.validCode = inforModel.code;
                                    [self.dataArray removeAllObjects];
@@ -180,7 +178,7 @@
             UIButton *button  = (UIButton*)[cell viewWithTag:100];
             [button setTitle:@"点击提交" forState:UIControlStateNormal];
             button.enabled = YES;
-            //没有数据
+        //没有数据
         }else{
             UIButton *button  = (UIButton*)[cell viewWithTag:100];
             [button setTitle:@"没有数据" forState:UIControlStateNormal];
@@ -243,6 +241,7 @@
 {
     //拼接参数
     NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    //标示整个表单是否都为空
     __block BOOL isEmpty = YES;
     [self.dataArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         Input *input =(Input*)obj;
@@ -251,11 +250,14 @@
             isEmpty = NO;
         }
     }];
+    //整个表单都为空直接返回
     if (isEmpty) {
         [self showPromptTextUIWithPromptText:@"请填写相关信息" title:nil andDuration:2 andposition:CSToastPositionCenter];;
         return;
     }
+    //用户输入了至少一个数据
     if (dic.count) {
+        //添加code标示
         if (self.validCode.length) {
         [dic setObject:self.validCode forKey:@"code"];
         }
@@ -310,7 +312,6 @@
     UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
     [alertView show];
 }
-
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

@@ -84,6 +84,8 @@
 		28B1BC0E1B95768B001D1DC1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28B1BC0D1B95768B001D1DC1 /* CoreGraphics.framework */; };
 		28B1BC121B9576AC001D1DC1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28B1BC111B9576AC001D1DC1 /* UIKit.framework */; };
 		28B1BC141B957700001D1DC1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28B1BC131B957700001D1DC1 /* Foundation.framework */; };
+		28CDE1591B96FC6000C70599 /* KeychainItemWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CDE1561B96FC6000C70599 /* KeychainItemWrapper.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		28CDE15A1B96FC6000C70599 /* KeychainUUID.m in Sources */ = {isa = PBXBuildFile; fileRef = 28CDE1581B96FC6000C70599 /* KeychainUUID.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -247,6 +249,10 @@
 		28B1BC0D1B95768B001D1DC1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		28B1BC111B9576AC001D1DC1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		28B1BC131B957700001D1DC1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		28CDE1551B96FC6000C70599 /* KeychainItemWrapper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainItemWrapper.h; sourceTree = "<group>"; };
+		28CDE1561B96FC6000C70599 /* KeychainItemWrapper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainItemWrapper.m; sourceTree = "<group>"; };
+		28CDE1571B96FC6000C70599 /* KeychainUUID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeychainUUID.h; sourceTree = "<group>"; };
+		28CDE1581B96FC6000C70599 /* KeychainUUID.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeychainUUID.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -492,16 +498,13 @@
 		28B1BB491B955DC6001D1DC1 /* ApplyDotey */ = {
 			isa = PBXGroup;
 			children = (
+				28CDE1531B96F32400C70599 /* Entrance */,
 				283750D81B96AF2C0051715A /* Resource */,
 				282F95AC1B95BB8600AB4F2A /* View */,
 				282F95AB1B95BB7A00AB4F2A /* Model */,
 				282F95A91B95BB5F00AB4F2A /* Controller */,
 				28B1BB7D1B95601B001D1DC1 /* Vendor */,
-				28B1BB4E1B955DC6001D1DC1 /* AppDelegate.h */,
-				28B1BB4F1B955DC6001D1DC1 /* AppDelegate.m */,
-				28B1BB541B955DC6001D1DC1 /* Main.storyboard */,
 				28B1BB571B955DC6001D1DC1 /* Images.xcassets */,
-				28B1BB591B955DC6001D1DC1 /* LaunchScreen.xib */,
 				28B1BB4A1B955DC6001D1DC1 /* Supporting Files */,
 			);
 			path = ApplyDotey;
@@ -548,6 +551,7 @@
 		28B1BB7D1B95601B001D1DC1 /* Vendor */ = {
 			isa = PBXGroup;
 			children = (
+				28CDE1541B96FC6000C70599 /* KeychainUUID */,
 				283750DB1B96AF6B0051715A /* UMAnalytics_Sdk_3.5.10 */,
 				283750D41B96964D0051715A /* MBProgressHUD */,
 				283750A01B968EE40051715A /* IQKeyBoardManager */,
@@ -697,6 +701,28 @@
 			path = MGJRequestManager;
 			sourceTree = "<group>";
 		};
+		28CDE1531B96F32400C70599 /* Entrance */ = {
+			isa = PBXGroup;
+			children = (
+				28B1BB4E1B955DC6001D1DC1 /* AppDelegate.h */,
+				28B1BB4F1B955DC6001D1DC1 /* AppDelegate.m */,
+				28B1BB541B955DC6001D1DC1 /* Main.storyboard */,
+				28B1BB591B955DC6001D1DC1 /* LaunchScreen.xib */,
+			);
+			name = Entrance;
+			sourceTree = "<group>";
+		};
+		28CDE1541B96FC6000C70599 /* KeychainUUID */ = {
+			isa = PBXGroup;
+			children = (
+				28CDE1551B96FC6000C70599 /* KeychainItemWrapper.h */,
+				28CDE1561B96FC6000C70599 /* KeychainItemWrapper.m */,
+				28CDE1571B96FC6000C70599 /* KeychainUUID.h */,
+				28CDE1581B96FC6000C70599 /* KeychainUUID.m */,
+			);
+			path = KeychainUUID;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -820,6 +846,7 @@
 				28B1BBC51B95601B001D1DC1 /* UIView+Toast.m in Sources */,
 				28B1BBC31B95601B001D1DC1 /* UIView+MJExtension.m in Sources */,
 				28B1BBBC1B95601B001D1DC1 /* MJRefreshGifHeader.m in Sources */,
+				28CDE15A1B96FC6000C70599 /* KeychainUUID.m in Sources */,
 				287162291B957B1B003A396C /* UIWebView+AFNetworking.m in Sources */,
 				287162241B957B1B003A396C /* UIAlertView+AFNetworking.m in Sources */,
 				283750CC1B968EE40051715A /* IQSegmentedNextPrevious.m in Sources */,
@@ -845,6 +872,7 @@
 				283750CA1B968EE40051715A /* IQKeyboardManager.m in Sources */,
 				283750CF1B968EE40051715A /* IQTitleBarButtonItem.m in Sources */,
 				28B1BB721B955E2C001D1DC1 /* MyNavigationViewController.m in Sources */,
+				28CDE1591B96FC6000C70599 /* KeychainItemWrapper.m in Sources */,
 				28B1BBB41B95601B001D1DC1 /* MJRefreshFooter.m in Sources */,
 				2871622E1B9585E3003A396C /* InforModel.m in Sources */,
 				28B1BBC21B95601B001D1DC1 /* UIScrollView+MJRefresh.m in Sources */,

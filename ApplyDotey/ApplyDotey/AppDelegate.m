@@ -11,6 +11,7 @@
 #import "RootViewController.h"
 #import "IQKeyboardManager.h"
 #import "MobClick.h"
+#import "KeychainUUID.h"
 @interface AppDelegate ()
 
 @end
@@ -23,9 +24,10 @@
     MyNavigationViewController *naViCtrl = [[MyNavigationViewController alloc]initWithRootViewController:[[RootViewController alloc]init]];
     _window.rootViewController = naViCtrl;
     [_window makeKeyAndVisible];
-    [self configKeyBoard];
-    [self startNetListen];
-    [self configAnalytics];
+    [self configKeyBoard];//配置键盘
+    [self startNetListen];//网络监听
+    [self configAnalytics];//UMeng统计
+    [self commitIphoneInfo];//上传机器信息
     return YES;
 }
 
@@ -86,9 +88,43 @@
     [MobClick setLogEnabled:YES];
 #endif
     
-    
+}
+#pragma mark - 后去手机机型 imei imsi
+- (void)commitIphoneInfo
+{
+    NSString *deviceID = [KeychainUUID value];
+    NSString *deViceModel = [UIDevice currentDevice].model;
+    NSDictionary *dic  = @{@"model":deViceModel,@"deviceID":deviceID};
+    [[MGJRequestManager sharedInstance] GET:@"http://shufaba.net/sqb/s/"
+                                 parameters:dic
+                           startImmediately:YES // 5
+                       configurationHandler:^(MGJRequestManagerConfiguration *configuration){
+                       } completionHandler:^(NSError *error, id<NSObject> result, BOOL isFromCache, AFHTTPRequestOperation *operation) {
+                           
+                           if (error) {
+                               return ;
+                           }else
+                           {
+                               NSLog(@"result = %@",result);
+
+                           }
+                       }
+     ];
 }
 
+//获取imei
+- (NSString*)imei
+{
+    
 
+    return nil;
+}
+//获取imsi
+- (NSString*)imsi
+{
+
+    
+    return nil;
+}
 
 @end
