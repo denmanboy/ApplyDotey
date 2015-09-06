@@ -17,8 +17,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"wwdc15.jpg"] forBarMetrics:UIBarMetricsDefault];
-    self.navigationBar.translucent = NO;
+//    [self.navigationBar setBackgroundImage:[UIImage imageNamed:@"wwdc15.jpg"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationBar.translucent = NO;
     
 //    
 //    // 获取系统自带滑动手势的target对象

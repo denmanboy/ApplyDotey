@@ -55,8 +55,8 @@
 }
 - (void)fitCondition
 {
-   [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"wwdc15.jpg"] forBarMetrics:UIBarMetricsDefault];
-    self.navigationController.navigationBar.translucent = NO;
+//   [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"wwdc15.jpg"] forBarMetrics:UIBarMetricsDefault];
+//    self.navigationController.navigationBar.translucent = NO;
 }
 
 - (UITableView *)tableView

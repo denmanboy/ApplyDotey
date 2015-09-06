@@ -11,7 +11,10 @@
 #import "InfoCell.h"
 #import "UIImageView+AFNetworking.h"
 #import "MBProgressHUD.h"
-
+#import "AppDelegate.h"
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#import "KeychainUUID.h"
 @interface RootViewController ()<UIAlertViewDelegate,InfoCellDelegate>
 
 @property (nonatomic,strong) UIImageView   *headerImageView;
@@ -30,12 +33,15 @@
     [self configSeparatorLine];
     //用户输入表单的code 保存
     NSString *code  =  (NSString*)[[NSUserDefaults standardUserDefaults]objectForKey:@"code"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
     //保存用户的自己的表单
     if (code.length) {
-        NSDictionary *dic  = @{@"code":code};
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:[self getDeviceInfo]];
+        [dic setObject:code forKey:@"code"];
         [self requestDataWithDic:dic];
     }else{
-        [self requestDataWithDic:nil];
+        
+        [self requestDataWithDic:[self getDeviceInfo]];
     }
 }
 - (UIImageView *)headerImageView
@@ -54,11 +60,11 @@
 #pragma mark - 开启网络监听
 - (void)viewWillAppear:(BOOL)animated
 {
-    self.isOpenNetListen = YES;
+    //self.isOpenNetListen = YES;
 }
 - (void)viewWillDisappear:(BOOL)animated
 {
-    self.isOpenNetListen = NO;
+    //self.isOpenNetListen = NO;
 }
 - (void)headerRefresh
 {
@@ -76,12 +82,19 @@
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *texfField = [alertView textFieldAtIndex:0];
     NSString *code = [[NSUserDefaults standardUserDefaults] objectForKey:@"code"];
+    [[NSUserDefaults standardUserDefaults]synchronize];
     if (code.length) {
         texfField.text = code;
     }
     [alertView show];
     
 }
+
+- (void)fitCondition
+{
+    self.navigationController.navigationBar.translucent = NO;
+}
+
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (buttonIndex == 1) {
@@ -93,13 +106,22 @@
         }
         //保存数据
         [[NSUserDefaults standardUserDefaults]setObject: field.text forKey:@"code"];
+        [[NSUserDefaults standardUserDefaults]synchronize];
         //请求服务器数据
-        [self requestDataWithDic:@{@"code":field.text}];
+        NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:[self getDeviceInfo]];
+        [dic setObject:field.text forKey:@"code"];
+        
+        [self requestDataWithDic:dic];
     }
 }
 #pragma mark - 请求服务器数据
 - (void)requestDataWithDic:(NSDictionary*)dic
 {
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    if ([appDelegate.reach currentReachabilityStatus] == NotReachable) {
+        [self showPromptTextUIWithPromptText:@"网络不可用" title:nil andDuration:2 andposition:CSToastPositionCenter];
+        return;
+    }
     [self showLoadingUI];
     [[MGJRequestManager sharedInstance] GET:@"http://shufaba.net/sqb/m/"
                                  parameters:dic
@@ -165,7 +187,7 @@
             UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
             button.frame = CGRectMake(30, 15,tableView.frame.size.width - 60, 34);
             button.layer.cornerRadius = 6;
-            [button setBackgroundColor:[UIColor blueColor]];
+            [button setBackgroundColor:[UIColor colorWithRed:0.143 green:0.522 blue:1.000 alpha:1.000]];
             button.showsTouchWhenHighlighted = YES;
             button.enabled = YES;
             button.tag = 100;
@@ -210,24 +232,20 @@
 //分割线左边
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([cell respondsToSelector:@selector(setSeparatorInset:)])
-    {
+    if ([cell respondsToSelector:@selector(setSeparatorInset:)]){
         [cell setSeparatorInset:UIEdgeInsetsZero];
     }
-    if ([cell respondsToSelector:@selector(setLayoutMargins:)])
-    {
+    if ([cell respondsToSelector:@selector(setLayoutMargins:)]){
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
 }
 
 - (void)configSeparatorLine
 {
-    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)])
-    {
+    if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]){
         [self.tableView setSeparatorInset:UIEdgeInsetsZero];
     }
-    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)])
-    {
+    if ([self.tableView respondsToSelector:@selector(setLayoutMargins:)]){
         [self.tableView setLayoutMargins:UIEdgeInsetsZero];
     }
 }
@@ -267,6 +285,11 @@
 #pragma mark - 提交表单
 - (void)commitInfoWithDic:(NSDictionary*)dic
 {
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    if ([appDelegate.reach currentReachabilityStatus] == NotReachable) {
+        [self showPromptTextUIWithPromptText:@"网络不可用" title:nil andDuration:2 andposition:CSToastPositionCenter];
+        return;
+    }
     [self showCustomLoadingUI];
     [[MGJRequestManager sharedInstance] GET:@"http://shufaba.net/sqb/s/"
                                  parameters:dic
@@ -312,6 +335,105 @@
     UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:message delegate:nil cancelButtonTitle:@"确定" otherButtonTitles:nil, nil];
     [alertView show];
 }
+
+
+
+
+- (NSDictionary*)getDeviceInfo
+{
+    NSString *UUID          = [KeychainUUID value];//设备唯一ID
+    NSString *deviceModel   = [UIDevice currentDevice].model;//品牌
+    NSString *systemName    = [UIDevice currentDevice].systemName;//系统名称
+    NSString *systemVersion = [UIDevice currentDevice].systemVersion;//系统版本
+    NSString *platform      = [self currentDevicePlatform];//平台号
+    NSString *deviceName    = [self currentDeviceModelName];//品牌具体型号
+    
+    NSDictionary *dic  = @{@"model":deviceModel,
+                           @"UUID":UUID,
+                           @"systemName":systemName,
+                           @"systemVersion":systemVersion,
+                           @"platform":platform,
+                           @"deviceName":deviceName,
+                           };
+    
+    return dic;
+}
+- (NSString*)currentDeviceModelName
+{
+    NSString *platform = [self currentDevicePlatform];
+    //*****************************iPhone******************************//
+    if ([platform isEqualToString:@"iPhone1,1"]) return @"iPhone 2G (A1203)";
+    if ([platform isEqualToString:@"iPhone1,2"]) return @"iPhone 3G (A1241/A1324)";
+    if ([platform isEqualToString:@"iPhone2,1"]) return @"iPhone 3GS (A1303/A1325)";
+    if ([platform isEqualToString:@"iPhone3,1"]) return @"iPhone 4 (A1332)";
+    if ([platform isEqualToString:@"iPhone3,2"]) return @"iPhone 4 (A1332)";
+    if ([platform isEqualToString:@"iPhone3,3"]) return @"iPhone 4 (A1349)";
+    if ([platform isEqualToString:@"iPhone4,1"]) return @"iPhone 4S (A1387/A1431)";
+    if ([platform isEqualToString:@"iPhone5,1"]) return @"iPhone 5 (A1428)";
+    if ([platform isEqualToString:@"iPhone5,2"]) return @"iPhone 5 (A1429/A1442)";
+    if ([platform isEqualToString:@"iPhone5,3"]) return @"iPhone 5c (A1456/A1532)";
+    if ([platform isEqualToString:@"iPhone5,4"]) return @"iPhone 5c (A1507/A1516/A1526/A1529)";
+    if ([platform isEqualToString:@"iPhone6,1"]) return @"iPhone 5s (A1453/A1533)";
+    if ([platform isEqualToString:@"iPhone6,2"]) return @"iPhone 5s (A1457/A1518/A1528/A1530)";
+    if ([platform isEqualToString:@"iPhone7,1"]) return @"iPhone 6 Plus (A1522/A1524)";
+    if ([platform isEqualToString:@"iPhone7,2"]) return @"iPhone 6 (A1549/A1586)";
+    
+    //*****************************iPod******************************//
+    if ([platform isEqualToString:@"iPod1,1"])   return @"iPod Touch 1G (A1213)";
+    if ([platform isEqualToString:@"iPod2,1"])   return @"iPod Touch 2G (A1288)";
+    if ([platform isEqualToString:@"iPod3,1"])   return @"iPod Touch 3G (A1318)";
+    if ([platform isEqualToString:@"iPod4,1"])   return @"iPod Touch 4G (A1367)";
+    if ([platform isEqualToString:@"iPod5,1"])   return @"iPod Touch 5G (A1421/A1509)";
+    
+    //*****************************iPad******************************//
+    if ([platform isEqualToString:@"iPad1,1"])   return @"iPad 1G (A1219/A1337)";
+    if ([platform isEqualToString:@"iPad2,1"])   return @"iPad 2 (A1395)";
+    if ([platform isEqualToString:@"iPad2,2"])   return @"iPad 2 (A1396)";
+    if ([platform isEqualToString:@"iPad2,3"])   return @"iPad 2 (A1397)";
+    if ([platform isEqualToString:@"iPad2,4"])   return @"iPad 2 (A1395+New Chip)";
+    if ([platform isEqualToString:@"iPad2,5"])   return @"iPad Mini 1G (A1432)";
+    if ([platform isEqualToString:@"iPad2,6"])   return @"iPad Mini 1G (A1454)";
+    if ([platform isEqualToString:@"iPad2,7"])   return @"iPad Mini 1G (A1455)";
+    if ([platform isEqualToString:@"iPad3,1"])   return @"iPad 3 (A1416)";
+    if ([platform isEqualToString:@"iPad3,2"])   return @"iPad 3 (A1403)";
+    if ([platform isEqualToString:@"iPad3,3"])   return @"iPad 3 (A1430)";
+    if ([platform isEqualToString:@"iPad3,4"])   return @"iPad 4 (A1458)";
+    if ([platform isEqualToString:@"iPad3,5"])   return @"iPad 4 (A1459)";
+    if ([platform isEqualToString:@"iPad3,6"])   return @"iPad 4 (A1460)";
+    if ([platform isEqualToString:@"iPad4,1"])   return @"iPad Air (A1474)";
+    if ([platform isEqualToString:@"iPad4,2"])   return @"iPad Air (A1475)";
+    if ([platform isEqualToString:@"iPad4,3"])   return @"iPad Air (A1476)";
+    if ([platform isEqualToString:@"iPad4,4"])   return @"iPad Mini 2G (A1489)";
+    if ([platform isEqualToString:@"iPad4,5"])   return @"iPad Mini 2G (A1490)";
+    if ([platform isEqualToString:@"iPad4,6"])   return @"iPad Mini 2G (A1491)";
+    //*****************************模拟器******************************//
+    if ([platform hasSuffix:@"i386"] || [platform isEqual:@"x86_64"])
+    {
+        BOOL smallerScreen = [[UIScreen mainScreen] bounds].size.width < 768;
+        return smallerScreen ? @"iPhone Simulator" : @"iPad Simulator";
+    }
+    return platform;
+    
+}
+//获得设备平台号
+- (NSString *)currentDevicePlatform
+{
+    int mib[2];
+    size_t len;
+    char *machine;
+    
+    mib[0] = CTL_HW;
+    mib[1] = HW_MACHINE;
+    sysctl(mib, 2, NULL, &len, NULL, 0);
+    machine = malloc(len);
+    sysctl(mib, 2, machine, &len, NULL, 0);
+    
+    NSString *platform = [NSString stringWithCString:machine encoding:NSASCIIStringEncoding];
+    free(machine);
+    return platform;
+    
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
