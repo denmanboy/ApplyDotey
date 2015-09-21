@@ -148,7 +148,7 @@
 @interface BaseViewController ()
 /**头部网络变化UI*/
 @property (nonatomic,strong) NetWorkChangeView  *netWorkChageView;
-@property (nonatomic,strong) NetWorkLoadIngView *netWorkLoadIngView;
+
 @end
 
 @implementation BaseViewController
@@ -179,20 +179,23 @@
 }
 //视图将要出现
 - (void)viewWillAppear:(BOOL)animated
-{
+{ [super viewWillAppear:animated];
     
 }
 //视图已经出现
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
 }
 //视图将要消失
 - (void)viewWillDisappear:(BOOL)animated
-{ self.isOpenNetListen = NO;
+{
+    [super viewWillDisappear:animated];
 }
 //视图已经消失
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
 }
 //收到系统内存警告
 - (void)didReceiveMemoryWarning
@@ -574,6 +577,7 @@
     if (!_netWorkLoadIngView) {
         self.netWorkLoadIngView = ({
             NetWorkLoadIngView *loadIngView  =[[NetWorkLoadIngView alloc]initWithFrame:CGRectMake(0, _viewToTop, self.view.frame.size.width, self.view.frame.size.height - _viewToTop - _viewToBottom)];
+            loadIngView.hidden = YES;
             [self.view addSubview:loadIngView];
             loadIngView;
         });

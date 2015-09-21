@@ -63,6 +63,7 @@ typedef NS_ENUM(NSUInteger, FitViewType){
 - (void)fitCondition;//填充适配的条件eg:导航条是否隐藏,导航条是否透明 tabBar是否隐藏
 
 //*****************************网络加载UI******************************//
+@property (nonatomic,strong) NetWorkLoadIngView *netWorkLoadIngView;
 /**
  *  显示默认的网络加载
  */

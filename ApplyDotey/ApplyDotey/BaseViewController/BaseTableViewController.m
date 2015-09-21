@@ -31,21 +31,24 @@
 }
 //视图将要出现
 - (void)viewWillAppear:(BOOL)animated
-{
+{ [super viewWillAppear:animated];
 
 }
 //视图已经出现
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
 }
 //视图将要消失
 - (void)viewWillDisappear:(BOOL)animated
 {
-
+    [super viewWillDisappear:animated];
+    
 }
 //视图已经消失
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
 }
 //收到系统内存警告
 - (void)didReceiveMemoryWarning

@@ -34,6 +34,7 @@
     //用户输入表单的code 保存
     NSString *code  =  (NSString*)[[NSUserDefaults standardUserDefaults]objectForKey:@"code"];
     [[NSUserDefaults standardUserDefaults]synchronize];
+
     //保存用户的自己的表单
     if (code.length) {
         NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:[self getDeviceInfo]];
@@ -59,12 +60,12 @@
 }
 #pragma mark - 开启网络监听
 - (void)viewWillAppear:(BOOL)animated
-{
-    //self.isOpenNetListen = YES;
+{ [super viewWillAppear:animated];
+   
 }
 - (void)viewWillDisappear:(BOOL)animated
-{
-    //self.isOpenNetListen = NO;
+{  [super viewWillDisappear:animated];
+    
 }
 - (void)headerRefresh
 {
@@ -78,6 +79,7 @@
 #pragma mark - 设置
 - (void)goToSetting
 {
+    
     UIAlertView *alertView = [[UIAlertView alloc]initWithTitle:nil message:@"输入参数" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"确定", nil];
     alertView.alertViewStyle = UIAlertViewStylePlainTextInput;
     UITextField *texfField = [alertView textFieldAtIndex:0];
@@ -95,8 +97,19 @@
     self.navigationController.navigationBar.translucent = NO;
 }
 
+- (BOOL)alertViewShouldEnableFirstOtherButton:(UIAlertView *)alertView
+{
+   
+    UITextField *field = [alertView textFieldAtIndex:0];
+    if (!field.text.length) {
+        [self showPromptTextUIWithPromptText:@"请输入参数!" title:nil andDuration:2 andposition:CSToastPositionCenter];
+        return NO;
+    }
+    return  YES;
+}
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+   
     if (buttonIndex == 1) {
         UITextField *field = [alertView textFieldAtIndex:0];
         if (!(field.text.length)) {
@@ -110,8 +123,10 @@
         //请求服务器数据
         NSMutableDictionary *dic = [NSMutableDictionary dictionaryWithDictionary:[self getDeviceInfo]];
         [dic setObject:field.text forKey:@"code"];
-        
-        [self requestDataWithDic:dic];
+        //没有正在加载中的数据 现在可以加载
+        if (self.netWorkLoadIngView.hidden) {
+            [self requestDataWithDic:dic];
+        }
     }
 }
 #pragma mark - 请求服务器数据
@@ -239,7 +254,7 @@
         [cell setLayoutMargins:UIEdgeInsetsZero];
     }
 }
-
+//延长分割线
 - (void)configSeparatorLine
 {
     if ([self.tableView respondsToSelector:@selector(setSeparatorInset:)]){
